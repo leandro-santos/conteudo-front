@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="pt-BR" ng-app="conteudo">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="angular.js"></script>
+    <script>
+        angular.module("conteudo",[]);
+        angular.module("conteudo").controller("helloWordCtrl", function ($scope) {
+            $scope.message = "Hello Word!";
+        });
+    </script>
+</head>
+<body ng-controller="helloWordCtrl">
+    {{message}}
+</body>
+</html>
