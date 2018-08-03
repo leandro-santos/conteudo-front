@@ -2,16 +2,26 @@
 <html lang="pt-BR" ng-app="conteudo">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
-    <script src="angular.js"></script>
+    <title>Conteúdo</title>
+    <script src="angular/angular.js"></script>
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.css"/>
     <script>
         angular.module("conteudo",[]);
-        angular.module("conteudo").controller("helloWordCtrl", function ($scope) {
+        angular.module("conteudo").controller("helloWordCtrl", function ($scope, $http) {
             $scope.message = "Hello Word!";
+            $scope.app = "Conteúdo";
+            var carregaTextos = function () {
+              $http.get("http://localhost:8080/textos");
+              
+            };
+            carregaTextos();
         });
     </script>
 </head>
 <body ng-controller="helloWordCtrl">
-    {{message}}
+    <div class="jumbotron">
+        <h4 ng-bind="app"></h4>
+    </div>
+{{message}}
 </body>
 </html>
