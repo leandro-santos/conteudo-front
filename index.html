@@ -3,25 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <title>Conteúdo</title>
+    <style>
+        .jumbotron {
+            width: 800px;
+            text-align: center;
+            margin-top: 20px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .table {
+            margin-top: 20px;
+        }
+        .form-control {
+            margin-bottom: 5px;
+        }
+        .selecionado {
+            background-color: yellowgreen !important;
+        }
+    </style>
     <script src="angular/angular.js"></script>
+    <script src="angular/angular-messages.js"></script>
     <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.css"/>
+
     <script>
-        angular.module("conteudo",[]);
-        angular.module("conteudo").controller("helloWordCtrl", function ($scope, $http) {
-            $scope.message = "Hello Word!";
-            $scope.app = "Conteúdo";
-            var carregaTextos = function () {
-              $http.get("http://localhost:8080/textos");
-              
+        angular.module("conteudo",["ngMessages"]);
+        angular.module("conteudo").controller("conteudoCtrl", function ($scope, $http) {
+            $scope.app = "APP Conteúdo";
+            $scope.textos = [];
+            var carregarTextos = function () {
+                $http({method: 'GET', url: "http://localhost:8080/textos"}).then(function (response) {
+                    $scope.textos = response.data;
+                    console.log($scope.textos);
+                }, function (error) {
+                });
             };
-            carregaTextos();
+            $scope.adicionarTexto = function (texto) {
+                $scope.textos.push(angular.copy(texto));
+                $http({url: "http://localhost:8080/textos", method: "POST", data: texto}).then(function (response) {
+                    delete $scope.texto;
+                    $scope.textoForm.$setPristine();
+                }, function (response) {
+
+                });
+            };
+            $scope.apagarTexto = function (textos) {
+                $scope.textos = textos.filter(function (texto) {
+                    if (!texto.selecionado) return texto;
+                });
+            };
+            $scope.isTextoSelecionado = function (textos) {
+                return textos.some(function (texto) {
+                    return texto.selecionado;
+                });
+            };
+            $scope.ordenarPor = function (campo) {
+                $scope.criterioDeOrdenacao = campo;
+                $scope.direcaoDaOrdenacao = !$scope.direcaoDaOrdenacao;
+            };
+            carregarTextos();
         });
     </script>
 </head>
-<body ng-controller="helloWordCtrl">
+<body ng-controller="conteudoCtrl">
     <div class="jumbotron">
         <h4 ng-bind="app"></h4>
+        <input class="form-control" type="text" ng-model="criterioDeBusca" placeholder="O que você está buscando"/>
+        <table class="table table-striped">
+            <tr>
+                <th></th>
+                <th><a href="" ng-click="ordenarPor('id')">Id</a></th>
+                <th><a href="" ng-click="ordenarPor('description')">Descrição</a></th>
+                <th><a href="" ng-click="ordenarPor('site')">Site</a></th>
+                <th><a href="" ng-click="ordenarPor('update_at')">Atualizado</a></th>
+                <th><a href="" ng-click="ordenarPor('create_at')">Criado</a></th>
+            </tr>
+            <tr ng-class="{selecionado: texto.selecionado}" ng-repeat="texto in textos | filter:{description: criterioDeBusca} | orderBy:criterioDeOrdenacao:direcaoDaOrdenacao">
+                <td><input type="checkbox" ng-model="texto.selecionado" /></td>
+                <td>{{texto.id}}</td>
+                <td>{{texto.description}}</td>
+                <td>{{texto.site}}</td>
+                <td>{{texto.update_at | date: 'dd/MM/yyyy HH:mm'}}</td>
+                <td>{{texto.create_at | date:'dd/MM/yyyy HH:mm'}}</td>
+            </tr>
+        </table>
+        <hr/>
+        <form name="textoForm" >
+            <input class="form-control" type="text" ng-model="texto.description" name="description" placeholder="Descrição" ng-required="true" ng-minlength="3"/>
+            <input class="form-control" type="text" ng-model="texto.site" name="site" placeholder="Site" ng-required="true" ng-pattern="/([\w-]+\.)+[\w-]+(/[\w- ./?%&=]*)?/"/>
+        </form>
+
+        <div ng-show="textoForm.description.$dirty" ng-messages="textoForm.description.$error">
+            <div ng-message="required" class="alert alert-danger">
+                Por favor, preencher o campo Nome!
+            </div>
+            <div ng-message="minlength" class="alert alert-danger">
+                O campo nome deve ter no mínimo 10 caracteres.
+            </div>
+        </div>
+        <div class="alert alert-danger" ng-show="textoForm.site.$error.required && textoForm.site.$dirty" >
+            Por favor, preencher o campo Site!
+        </div>
+        <div class="alert alert-danger" ng-show="textoForm.site.$error.pattern" >
+            O campo site deve ter o formato site@site.com.
+        </div>
+        <button class="btn btn-primary btn-block" ng-click="adicionarTexto(texto)" ng-disabled="textoForm.$invalid">Adicionar Texto</button>
+        <button class="btn btn-danger btn-block" ng-click="apagarTexto(textos)" ng-show="isTextoSelecionado(textos)" >Apagar Texto</button>
     </div>
-{{message}}
+    <div ng-include="'footer.html'"></div>
+
 </body>
 </html>
