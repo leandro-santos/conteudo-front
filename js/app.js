@@ -1,1 +1,1 @@
-angular.module("conteudo",["ngMessages"]);
+angular.module("conteudo",["ngMessages", "ngRoute"]);
