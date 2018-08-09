@@ -1,0 +1,23 @@
+<div class="jumbotron" >
+    <form name="textoForm" >
+        <input class="form-control" type="text" ng-model="texto.description" name="description" placeholder="Descrição" ng-required="true" ng-minlength="3"/>
+        <input class="form-control" type="text" ng-model="texto.site" name="site" placeholder="Site" ng-required="true" ng-pattern="/([\w-]+\.)+[\w-]+(/[\w- ./?%&=]*)?/"/>
+        <input class="form-control" type="text" ng-model="texto.create_at" name="create_at" placeholder="Data" ui-date/>
+    </form>
+
+    <div ng-show="textoForm.description.$dirty" ng-messages="textoForm.description.$error">
+        <div ng-message="required" class="alert alert-danger">
+            Por favor, preencher o campo Nome!
+        </div>
+        <div ng-message="minlength" class="alert alert-danger">
+            O campo nome deve ter no mínimo 10 caracteres.
+        </div>
+    </div>
+    <div class="alert alert-danger" ng-show="textoForm.site.$error.required && textoForm.site.$dirty" >
+        Por favor, preencher o campo Site!
+    </div>
+    <div class="alert alert-danger" ng-show="textoForm.site.$error.pattern" >
+        O campo site deve ter o formato site@site.com.
+    </div>
+    <button class="btn btn-primary btn-block" ng-click="adicionarTexto(texto)" ng-disabled="textoForm.$invalid">Adicionar Texto</button>
+</div>

@@ -1,36 +1,32 @@
-angular.module("conteudo").controller("conteudoCtrl", function ($scope, textosAPI) {
+angular.module("conteudo").controller("conteudoCtrl", function ($scope, textosAPI, textos) {
     $scope.app = "APP Conteúdo";
-    $scope.textos = [];
+    $scope.textos = textos.data;
 
-    var carregarTextos = function () {
-        textosAPI.getTextos().then(function (response) {
-            $scope.textos = response.data;
-        }, function (error) {
-            $scope.error = "Não foi possível carregar os dados!";
-        });
-    };
-    $scope.adicionarTexto = function (texto) {
-        textosAPI.saveTexto(texto).then(function (response) {
-            delete $scope.texto;
-            $scope.textoForm.$setPristine();
-            carregarTextos();
+    var deletaTexto = function (texto) {
+        textosAPI.deleteTexto(texto.id).then(function (response) {
+            var index = $scope.textos.indexOf(texto);
+            $scope.textos.splice(index, 1);
+            return response;
         }, function (response) {
-            $scope.error = "Não foi possível gravar os dados!";
+            console.log(response);
         });
-    };
+    }
+
     $scope.apagarTexto = function (textos) {
-        $scope.textos = textos.filter(function (texto) {
-            if (!texto.selecionado) return texto;
+        textos.forEach(function (texto) {
+            if (texto.selecionado) deletaTexto(texto);
         });
     };
+
     $scope.isTextoSelecionado = function (textos) {
         return textos.some(function (texto) {
             return texto.selecionado;
         });
     };
+
     $scope.ordenarPor = function (campo) {
         $scope.criterioDeOrdenacao = campo;
         $scope.direcaoDaOrdenacao = !$scope.direcaoDaOrdenacao;
     };
-    carregarTextos();
+
 });

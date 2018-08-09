@@ -1,0 +1,26 @@
+<div class="jumbotron">
+    <table class="table">
+        <tr>
+            <td>
+                {{texto.description}}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                {{texto.site}}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                {{texto.update_at | date: 'dd/MM/yyyy HH:mm'}}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                {{texto.create_at | date: 'dd/MM/yyyy HH:mm'}}
+            </td>
+        </tr>
+    </table>
+    <hr/>
+    <a href="#!/textos" class="btn btn-primary">Voltar</a>
+</div>
